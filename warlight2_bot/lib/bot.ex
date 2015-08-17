@@ -1,17 +1,16 @@
 
 defmodule Bot do
-   def start() do
-      IO.puts :stderr, "Starting bot"
-      {:ok, file} = File.open "hello", [:write]
-      IO.binwrite file, "world"
-      run_input_loop()
+   def main(_) do
+      {:ok, logger} = CustomLogger.start()
+      send logger, {:init, ""}
+      run_input_loop(logger)
    end
 
-   def run_input_loop() do
+   def run_input_loop(logger) do
       IO.puts :stderr, "RUNNING INPUT LOOP"
       command = IO.gets ""
-      IO.puts :stderr, "Command received: " <> command
-      run_input_loop()
+      send logger, {:write, "Command received: " <> command}
+      run_input_loop(logger)
    end
 
 end
