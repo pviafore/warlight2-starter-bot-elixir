@@ -20,6 +20,8 @@ defmodule CommandParser do
             Regex.match?(~r/opponent_moves/, msg) -> nil
             Regex.match?(~r/go place_armies \d+/, msg) ->
                 send game_engine, {:place_armies, ""}
+            Regex.match?(~r/go attack\/transfer \d+/, msg) ->
+                send game_engine, {:attack_transfer, ""}
             Regex.match?(~r/pick_starting_region \d+ ((?:\d+ )+)/, msg) ->
                 matches = Regex.run(~r/pick_starting_region \d+ ((?:\d+\s*)+)/, msg)
                 nums = String.split(List.last(matches))

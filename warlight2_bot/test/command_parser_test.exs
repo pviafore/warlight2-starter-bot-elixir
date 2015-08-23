@@ -32,4 +32,8 @@ defmodule CommandParserTest do
     test "Returns armies to place" do
       assert_command_parser_communication("go place_armies 10000", :place_armies, "")
     end
+
+    test "Returns attack/transfer" do
+      assert_command_parser_communication("go attack/transfer 10000", :attack_transfer, "")
+    end
 end

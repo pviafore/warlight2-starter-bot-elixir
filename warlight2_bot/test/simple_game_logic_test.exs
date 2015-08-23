@@ -27,4 +27,8 @@ defmodule SimpleGameLogicTest do
    test "placing armies should do nothing at all" do
        assert_send_logic({:place_armies, ""},  "No moves", :message)
    end
+
+   test "attacking should do nothing at all" do
+       assert_send_logic({:attack_transfer, ""},  "No moves", :message)
+   end
 end
