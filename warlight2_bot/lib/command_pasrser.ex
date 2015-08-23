@@ -17,7 +17,7 @@ defmodule CommandParser do
             Regex.match?(~r/pick_starting_region \d+ ((?:\d+ )+)/, msg) ->
                 matches = Regex.run(~r/pick_starting_region \d+ ((?:\d+\s*)+)/, msg)
                 nums = String.split(List.last(matches))
-                send game_engine, {:starting_region_choice, Enum.map(nums, &(String.to_integer &1)) }
+                send game_engine, {:starting_region_choice, nums }
             true->
               send game_engine, {:error, "Invalid Message Received"}
             end

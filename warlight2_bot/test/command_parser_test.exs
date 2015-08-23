@@ -27,6 +27,6 @@ defmodule CommandParserTest do
     test "Returns starting region list given a list" do
        assert_command_parser_communication("pick_starting_region 10000 2 6 10 19 20 26 32 33 38 45 55 62",
                                                   :starting_region_choice,
-                                                  [2, 6, 10, 19, 20, 26,32, 33, 38, 45, 55, 62])
+                                                  ["2", "6", "10", "19", "20", "26","32", "33", "38", "45", "55", "62"])
     end
 end
