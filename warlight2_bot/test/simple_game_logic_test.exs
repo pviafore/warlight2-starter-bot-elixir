@@ -23,4 +23,8 @@ defmodule SimpleGameLogicTest do
    test "should pick a different first starting region" do
        assert_send_logic({:starting_region_choice, ["7", "3", "1", "200", "12", "4"]}, "7", :message)
    end
+
+   test "placing armies should do nothing at all" do
+       assert_send_logic({:place_armies, ""},  "No moves", :message)
+   end
 end

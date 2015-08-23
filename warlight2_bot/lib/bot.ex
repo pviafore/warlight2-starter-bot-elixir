@@ -9,7 +9,7 @@ defmodule Bot do
 
    def run_input_loop(parser) do
       command = IO.gets ""
-      CommandParser.send_message parser, command
+      CommandParser.send_message(parser, command)
 
       run_input_loop( parser)
    end

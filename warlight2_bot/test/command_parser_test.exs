@@ -8,7 +8,6 @@ defmodule CommandParserTest do
     end
 
     def assert_command_parser_communication(message, atom, expected) do
-
         command_parser = CommandParser.start(self(), spawn &empty_mailbox/0)
         CommandParser.send_message(command_parser, message)
         receive do
@@ -28,5 +27,9 @@ defmodule CommandParserTest do
        assert_command_parser_communication("pick_starting_region 10000 2 6 10 19 20 26 32 33 38 45 55 62",
                                                   :starting_region_choice,
                                                   ["2", "6", "10", "19", "20", "26","32", "33", "38", "45", "55", "62"])
+    end
+
+    test "Returns armies to place" do
+      assert_command_parser_communication("go place_armies 10000", :place_armies, "")
     end
 end

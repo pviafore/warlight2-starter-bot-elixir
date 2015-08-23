@@ -9,7 +9,8 @@ defmodule CommandOutputter do
          {:message, message} ->
                IO.puts message
                CustomLogger.write(logger, "Sent command to server " <> message)
-         invalid -> CustomLogger.write(logger, "Invalid message received in Command Outputter " <> invalid )
+         {:error, msg} -> CustomLogger.write(logger, "Error message received in Command Outputter " <> msg )
+         _ -> CustomLogger.write("Command Outputter received invalid message ")
       end
       send_input(logger)
    end
