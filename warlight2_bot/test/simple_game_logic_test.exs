@@ -1,4 +1,4 @@
-defmodule GameLogicTest do
+defmodule SimpleGameLogicTest do
    use ExUnit.Case
 
 

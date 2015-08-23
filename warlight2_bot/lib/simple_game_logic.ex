@@ -1,4 +1,4 @@
-defmodule GameLogic do
+defmodule SimpleGameLogic do
 
 
 end
