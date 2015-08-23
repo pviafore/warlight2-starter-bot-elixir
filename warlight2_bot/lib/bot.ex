@@ -1,15 +1,17 @@
-
 defmodule Bot do
    def main(_) do
       logger = CustomLogger.start()
-      run_input_loop(logger)
+      outputter = CommandOutputter.start(logger)
+      logic = SimpleGameLogic.start(outputter)
+      command_parser = CommandParser.start(logic, logger)
+      run_input_loop(logger, command_parser)
    end
 
-   def run_input_loop(logger) do
-      IO.puts :stderr, "RUNNING INPUT LOOP"
+   def run_input_loop(logger, parser) do
       command = IO.gets ""
-      CustomLogger.write(logger, "Command received: " <> command)
-      run_input_loop(logger)
+      send parser, command
+
+      run_input_loop(logger, parser)
    end
 
 end

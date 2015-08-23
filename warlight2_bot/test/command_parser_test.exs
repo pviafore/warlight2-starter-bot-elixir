@@ -1,8 +1,15 @@
 defmodule CommandParserTest do
     use ExUnit.Case
 
+    def empty_mailbox do
+      receive do
+         _ -> nil
+      end
+    end
+
     def assert_command_parser_communication(message, atom, expected) do
-        command_parser = CommandParser.start(self())
+
+        command_parser = CommandParser.start(self(), spawn &empty_mailbox/0)
         CommandParser.send_message(command_parser, message)
         receive do
            {a, x} ->

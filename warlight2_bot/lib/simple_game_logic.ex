@@ -1,16 +1,16 @@
 defmodule SimpleGameLogic do
 
-  def start(sender) do
-      {:ok, logic} = Task.start_link(fn->recv(sender) end)
+  def start(command_outputter) do
+      {:ok, logic} = Task.start_link(fn->recv(command_outputter) end)
       logic
   end
 
-  def recv(sender) do
+  def recv(command_outputter) do
       receive do
-         {:starting_region_choice, list} -> send sender, {:message, List.first(list)}
-         _ -> send sender, {:error, "Invalid Message Received"}
+         {:starting_region_choice, list} -> send command_outputter, {:message, List.first(list)}
+         _ -> send command_outputter, {:error, "Invalid Message Received"}
       end
-      recv(sender)
+      recv(command_outputter)
   end
 
 
