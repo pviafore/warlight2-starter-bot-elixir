@@ -11,8 +11,15 @@ defmodule CommandParser do
 
   def parse(sender) do
      receive do
-        {:message, _} ->
-            send sender, {:error, "Invalid Message Received"}
+        {:message, msg} ->
+            cond do
+            Regex.match?(~r/pick_starting_region \d+ ((?:\d+ )+)/, msg) ->
+                matches = Regex.run(~r/pick_starting_region \d+ ((?:\d+\s*)+)/, msg)
+                nums = String.split(List.last(matches))
+                send sender, {:starting_region_choice, Enum.map(nums, &(String.to_integer &1)) }
+            true->
+              send sender, {:error, "Invalid Message Received"}
+            end
      end
      parse(sender)
   end
