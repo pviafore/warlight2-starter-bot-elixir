@@ -12,6 +12,8 @@ defmodule SimpleGameLogic do
             recv(command_outputter, GameState.set_timebank(game_state, time))
          {:time_per_move, time} ->
             recv(command_outputter, GameState.set_time_per_move(game_state, time))
+         {:max_rounds, rounds} ->
+            recv(command_outputter, GameState.set_max_rounds(game_state, rounds))
          {:starting_region_choice, list} -> send command_outputter, {:message, List.first(list)}
          {:place_armies, _} -> send command_outputter, {:message, "No moves"}
          {:attack_transfer, _} -> send command_outputter, {:message, "No moves"}

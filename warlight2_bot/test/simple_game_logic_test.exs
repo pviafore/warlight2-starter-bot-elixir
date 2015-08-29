@@ -55,4 +55,8 @@ defmodule SimpleGameLogicTest do
    test "should set time_per_move" do
        assert_send_settings {:time_per_move, 50},GameState.initial |> GameState.set_time_per_move(50)
    end
+
+   test "should set max_rounds" do
+       assert_send_settings {:max_rounds, 100}, GameState.initial |> GameState.set_max_rounds(100)
+   end
 end
