@@ -2,7 +2,8 @@ defmodule GameStateTest do
    use ExUnit.Case
 
    test "should have correct initial state" do
-       assert %{:timebank => 0, :time_per_move => 0, :max_rounds => 0} == GameState.initial()
+       assert %{:timebank => 0, :time_per_move => 0,
+                :max_rounds => 0, :bot_name =>""} == GameState.initial()
    end
    test "should set timebank" do
        assert %{GameState.initial | :timebank => 1000} == GameState.initial() |> GameState.set_timebank 1000
