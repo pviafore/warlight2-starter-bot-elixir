@@ -20,8 +20,10 @@ defmodule GameStateTest do
        assert %{:timebank => 0, :time_per_move => 0,
                 :max_rounds => 0, :bot_name =>""} == GameState.initial()
    end
+
    GameStateTestMacro.test_state "should set timebank", :timebank, :set_timebank, 1000, 100
    GameStateTestMacro.test_state "should set time per move", :time_per_move, :set_time_per_move, 500, 50
-   GameStateTestMacro.test_state "should set max_rounds", :max_rounds, :set_max_rounds, 100, 200
+   GameStateTestMacro.test_state "should set max rounds", :max_rounds, :set_max_rounds, 100, 200
+   GameStateTestMacro.test_state "should set bot name", :bot_name, :set_bot_name,"bot1", "bot2"
 
 end
