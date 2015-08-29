@@ -39,7 +39,6 @@ defmodule SimpleGameLogicTest do
    end
 
    test "can get initial state" do
-       logic = SimpleGameLogic.start self()
        assert_send_logic({:state, self()}, GameState.initial, :state)
    end
 

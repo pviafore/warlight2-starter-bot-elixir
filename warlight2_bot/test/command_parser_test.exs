@@ -38,6 +38,10 @@ defmodule CommandParserTest do
     end
 
     test "updates timebank" do
-      assert_command_parser_communication("settings timebank 1000", :initial_timebank, "1000")
+      assert_command_parser_communication("settings timebank 1000", :initial_timebank, 1000)
+    end
+
+    test "updates time_per_move" do
+       assert_command_parser_communication("settings time_per_move 500", :time_per_move, 500)
     end
 end

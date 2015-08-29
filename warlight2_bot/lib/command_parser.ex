@@ -16,7 +16,10 @@ defmodule CommandParser do
             cond do
             Regex.match?(~r/settings timebank (\d+)/, msg) ->
                  matches = Regex.run(~r/settings timebank (\d+)/, msg)
-                 send game_engine, {:initial_timebank, List.last(matches)}
+                 send game_engine, {:initial_timebank, String.to_integer List.last(matches)}
+            Regex.match?(~r/settings time_per_move (\d+)/, msg) ->
+                 matches = Regex.run(~r/settings time_per_move (\d+)/, msg)
+                 send game_engine, {:time_per_move, String.to_integer List.last(matches)}
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
