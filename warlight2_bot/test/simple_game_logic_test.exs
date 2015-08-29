@@ -1,6 +1,16 @@
+defmodule LogicTestMacro do
+   defmacro test_setting(desc, setting, func, value) do
+     quote do
+        test unquote(desc) do
+           assert_send_settings {unquote(setting), unquote(value)}, apply( GameState, unquote(func), [GameState.initial, unquote(value)])
+        end
+     end
+   end
+end
+
 defmodule SimpleGameLogicTest do
    use ExUnit.Case
-
+   require LogicTestMacro
    def assert_send_logic(logic, message, expected, atom) do
       send logic, message
       receive do
@@ -48,15 +58,10 @@ defmodule SimpleGameLogicTest do
        assert_send_logic(logic, {:state, self()},  expected_state, :state)
   end
 
-   test "should set timebank" do
-       assert_send_settings {:initial_timebank, 100},GameState.initial |> GameState.set_timebank(100)
-   end
 
-   test "should set time_per_move" do
-       assert_send_settings {:time_per_move, 50},GameState.initial |> GameState.set_time_per_move(50)
-   end
 
-   test "should set max_rounds" do
-       assert_send_settings {:max_rounds, 100}, GameState.initial |> GameState.set_max_rounds(100)
-   end
+  LogicTestMacro.test_setting "should set timebank", :initial_timebank, :set_timebank, 100
+  LogicTestMacro.test_setting "should set timebank", :time_per_move, :set_time_per_move, 50
+  LogicTestMacro.test_setting "should set timebank", :max_rounds, :set_max_rounds, 50
+
 end
