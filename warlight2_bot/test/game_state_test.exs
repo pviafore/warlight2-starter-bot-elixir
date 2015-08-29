@@ -19,7 +19,8 @@ defmodule GameStateTest do
    test "should have correct initial state" do
        assert %{:timebank => 0, :time_per_move => 0,
                 :max_rounds => 0, :bot_name =>"",
-                :opponent_bot_name => ""} == GameState.initial()
+                :opponent_bot_name => "",
+                :starting_armies => 0} == GameState.initial()
    end
 
    GameStateTestMacro.test_state "should set timebank", :timebank, :set_timebank, 1000, 100
@@ -27,5 +28,6 @@ defmodule GameStateTest do
    GameStateTestMacro.test_state "should set max rounds", :max_rounds, :set_max_rounds, 100, 200
    GameStateTestMacro.test_state "should set bot name", :bot_name, :set_bot_name,"bot1", "bot2"
    GameStateTestMacro.test_state "should set opponent name", :opponent_bot_name, :set_opponent_bot_name,"bot2", "bot1"
+   GameStateTestMacro.test_state "should set starting armies", :starting_armies, :set_starting_armies,3, 5
 
 end

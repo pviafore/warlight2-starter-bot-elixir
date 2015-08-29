@@ -34,6 +34,8 @@ defmodule CommandParser do
                 send_single_string game_engine, ~r/settings your_bot (\w+)/, msg, :bot_name
             Regex.match?(~r/settings opponent_bot (\w+)/, msg) ->
                 send_single_string game_engine, ~r/settings opponent_bot (\w+)/, msg, :opponent_bot_name
+            Regex.match?(~r/settings starting_armies (\d+)/, msg) ->
+                 send_single_int game_engine, ~r/settings starting_armies (\d+)/, msg, :starting_armies
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
