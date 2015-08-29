@@ -45,7 +45,6 @@ defmodule CommandParser do
                  send_list game_engine, ~r/settings starting_regions ((?:\d+\s*)+)/, msg, :starting_regions
             Regex.match?(~r/settings starting_pick_amount (\d+)/, msg) ->
                  send_int game_engine, ~r/settings starting_pick_amount (\d+)/, msg, :starting_pick_amount
-            Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
             Regex.match?(~r/opponent_moves/, msg) -> nil
