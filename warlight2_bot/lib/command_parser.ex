@@ -52,7 +52,7 @@ defmodule CommandParser do
             Regex.match?(~r/go attack\/transfer \d+/, msg) ->
                 send game_engine, {:attack_transfer, ""}
             Regex.match?(~r/pick_starting_region \d+ ((?:\d+ )+)/, msg) ->
-                send_list ~r/pick_starting_region \d+ ((?:\d+\s*)+)/, msg, :starting_region_choice
+                send_list game_engine, ~r/pick_starting_region \d+ ((?:\d+\s*)+)/, msg, :starting_region_choice
             true->
               CustomLogger.write(logger, "Command Parser didn't know how to parse message: " <> msg)
               send game_engine, {:error, "Invalid Message Received"}
