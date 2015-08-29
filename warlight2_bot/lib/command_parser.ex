@@ -14,6 +14,9 @@ defmodule CommandParser do
         {:message, msg} ->
             CustomLogger.write(logger, "Command received: " <> msg)
             cond do
+            Regex.match?(~r/settings timebank (\d+)/, msg) ->
+                 matches = Regex.run(~r/settings timebank (\d+)/, msg)
+                 send game_engine, {:initial_timebank, List.last(matches)}
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil

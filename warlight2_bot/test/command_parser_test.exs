@@ -36,4 +36,8 @@ defmodule CommandParserTest do
     test "Returns attack/transfer" do
       assert_command_parser_communication("go attack/transfer 10000", :attack_transfer, "")
     end
+
+    test "updates timebank" do
+      assert_command_parser_communication("settings timebank 1000", :initial_timebank, "1000")
+    end
 end
