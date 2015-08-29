@@ -43,6 +43,7 @@ defmodule CommandParserTest do
     CommandParserMacro.test_communication "updates opponent bot_name", "settings opponent_bot player2", :opponent_bot_name, "player2"
     CommandParserMacro.test_communication "updates starting armies", "settings starting_armies 3", :starting_armies, 3
     CommandParserMacro.test_communication "updates starting regions", "settings starting_regions 1 2 4 7", :starting_regions, ["1", "2", "4" ,"7"]
+    CommandParserMacro.test_communication "updates starting pick amount", "settings starting_pick_amount 1", :starting_pick_amount, 1
 
 
 end

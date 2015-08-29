@@ -9,12 +9,12 @@ defmodule CommandParser do
       send parser, {:message, m}
   end
 
-  def send_single_int(engine, regex, msg, atom) do
+  def send_int(engine, regex, msg, atom) do
     matches = Regex.run(regex, msg)
     send engine, {atom, String.to_integer List.last(matches)}
   end
 
-  def send_single_string(engine, regex, msg, atom) do
+  def send_string(engine, regex, msg, atom) do
     matches = Regex.run(regex, msg)
     send engine, {atom, List.last(matches)}
   end
@@ -30,19 +30,21 @@ defmodule CommandParser do
             CustomLogger.write(logger, "Command received: " <> msg)
             cond do
             Regex.match?(~r/settings timebank (\d+)/, msg) ->
-                 send_single_int game_engine, ~r/settings timebank (\d+)/, msg, :initial_timebank
+                 send_int game_engine, ~r/settings timebank (\d+)/, msg, :initial_timebank
             Regex.match?(~r/settings time_per_move (\d+)/, msg) ->
-                 send_single_int game_engine, ~r/settings time_per_move (\d+)/, msg, :time_per_move
+                 send_int game_engine, ~r/settings time_per_move (\d+)/, msg, :time_per_move
             Regex.match?(~r/settings max_rounds (\d+)/, msg) ->
-                send_single_int game_engine, ~r/settings max_rounds (\d+)/, msg, :max_rounds
+                send_int game_engine, ~r/settings max_rounds (\d+)/, msg, :max_rounds
             Regex.match?(~r/settings your_bot (\w+)/, msg) ->
-                send_single_string game_engine, ~r/settings your_bot (\w+)/, msg, :bot_name
+                send_string game_engine, ~r/settings your_bot (\w+)/, msg, :bot_name
             Regex.match?(~r/settings opponent_bot (\w+)/, msg) ->
-                send_single_string game_engine, ~r/settings opponent_bot (\w+)/, msg, :opponent_bot_name
+                send_string game_engine, ~r/settings opponent_bot (\w+)/, msg, :opponent_bot_name
             Regex.match?(~r/settings starting_armies (\d+)/, msg) ->
-                 send_single_int game_engine, ~r/settings starting_armies (\d+)/, msg, :starting_armies
+                 send_int game_engine, ~r/settings starting_armies (\d+)/, msg, :starting_armies
             Regex.match?(~r/settings starting_regions ((?:\d+\s*)+)/, msg) ->
                  send_list game_engine, ~r/settings starting_regions ((?:\d+\s*)+)/, msg, :starting_regions
+            Regex.match?(~r/settings starting_pick_amount (\d+)/, msg) ->
+                 send_int game_engine, ~r/settings starting_pick_amount (\d+)/, msg, :starting_pick_amount
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
