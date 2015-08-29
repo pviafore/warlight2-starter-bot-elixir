@@ -47,4 +47,10 @@ defmodule SimpleGameLogicTest do
        send logic, {:initial_timebank, 100}
        assert_send_logic(logic, {:state, self()},  GameState.initial |> GameState.set_timebank(100), :state)
    end
+
+   test "should set time_per_move" do
+       logic = SimpleGameLogic.start self()
+       send logic, {:time_per_move, 50}
+       assert_send_logic(logic, {:state, self()},  GameState.initial |> GameState.set_time_per_move(50), :state)
+   end
 end
