@@ -39,5 +39,6 @@ defmodule CommandParserTest do
     CommandParserMacro.test_communication "updates timebank", "settings timebank 1000", :initial_timebank, 1000
     CommandParserMacro.test_communication "updates time_per_move", "settings time_per_move 500", :time_per_move, 500
     CommandParserMacro.test_communication "updates max_round", "settings max_rounds 100", :max_rounds, 100
+    CommandParserMacro.test_communication "updates bot_name", "settings your_bot player1", :bot_name, "player1"
 
 end

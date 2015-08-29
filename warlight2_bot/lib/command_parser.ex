@@ -14,6 +14,11 @@ defmodule CommandParser do
     send engine, {atom, String.to_integer List.last(matches)}
   end
 
+  def send_single_string(engine, regex, msg, atom) do
+    matches = Regex.run(regex, msg)
+    send engine, {atom, List.last(matches)}
+  end
+
   def parse(game_engine, logger) do
      receive do
         {:message, msg} ->
@@ -25,6 +30,8 @@ defmodule CommandParser do
                  send_single_int game_engine, ~r/settings time_per_move (\d+)/, msg, :time_per_move
             Regex.match?(~r/settings max_rounds (\d+)/, msg) ->
                 send_single_int game_engine, ~r/settings max_rounds (\d+)/, msg, :max_rounds
+            Regex.match?(~r/settings your_bot (\w+)/, msg) ->
+                send_single_string game_engine, ~r/settings your_bot (\w+)/, msg, :bot_name
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
