@@ -42,15 +42,17 @@ defmodule SimpleGameLogicTest do
        assert_send_logic({:state, self()}, GameState.initial, :state)
    end
 
-   test "should set timebank" do
+   def assert_send_settings(msg, expected_state) do
        logic = SimpleGameLogic.start self()
-       send logic, {:initial_timebank, 100}
-       assert_send_logic(logic, {:state, self()},  GameState.initial |> GameState.set_timebank(100), :state)
+       send logic, msg
+       assert_send_logic(logic, {:state, self()},  expected_state, :state)
+  end
+
+   test "should set timebank" do
+       assert_send_settings {:initial_timebank, 100},GameState.initial |> GameState.set_timebank(100)
    end
 
    test "should set time_per_move" do
-       logic = SimpleGameLogic.start self()
-       send logic, {:time_per_move, 50}
-       assert_send_logic(logic, {:state, self()},  GameState.initial |> GameState.set_time_per_move(50), :state)
+       assert_send_settings {:time_per_move, 50},GameState.initial |> GameState.set_time_per_move(50)
    end
 end
