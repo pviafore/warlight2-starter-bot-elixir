@@ -20,6 +20,8 @@ defmodule SimpleGameLogic do
              recv(command_outputter, GameState.set_opponent_bot_name(game_state, name))
          {:starting_armies, num_armies} ->
              recv(command_outputter, GameState.set_starting_armies(game_state, num_armies))
+         {:starting_regions, num_regions} ->
+             recv(command_outputter, GameState.set_starting_regions(game_state, num_regions))
          {:starting_region_choice, list} -> send command_outputter, {:message, List.first(list)}
          {:place_armies, _} -> send command_outputter, {:message, "No moves"}
          {:attack_transfer, _} -> send command_outputter, {:message, "No moves"}

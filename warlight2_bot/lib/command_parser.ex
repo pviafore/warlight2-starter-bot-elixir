@@ -19,6 +19,11 @@ defmodule CommandParser do
     send engine, {atom, List.last(matches)}
   end
 
+  def send_list(engine, regex, msg, atom) do
+     matches = Regex.run(regex, msg)
+     send engine, {atom, String.split(List.last(matches))}
+  end
+
   def parse(game_engine, logger) do
      receive do
         {:message, msg} ->
@@ -36,6 +41,8 @@ defmodule CommandParser do
                 send_single_string game_engine, ~r/settings opponent_bot (\w+)/, msg, :opponent_bot_name
             Regex.match?(~r/settings starting_armies (\d+)/, msg) ->
                  send_single_int game_engine, ~r/settings starting_armies (\d+)/, msg, :starting_armies
+            Regex.match?(~r/settings starting_regions ((?:\d+\s*)+)/, msg) ->
+                 send_list game_engine, ~r/settings starting_regions ((?:\d+\s*)+)/, msg, :starting_regions
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil

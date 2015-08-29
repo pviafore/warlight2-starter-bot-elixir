@@ -66,5 +66,6 @@ defmodule SimpleGameLogicTest do
   LogicTestMacro.test_setting "should set bot name", :bot_name, :set_bot_name, "player1"
   LogicTestMacro.test_setting "should set opponent bot name", :opponent_bot_name, :set_opponent_bot_name, "player2"
   LogicTestMacro.test_setting "should set starting_armies", :starting_armies, :set_starting_armies, 5
+  LogicTestMacro.test_setting "should set starting regions", :starting_regions, :set_starting_regions, [3, 5, 7,  11, 12]
 
 end
