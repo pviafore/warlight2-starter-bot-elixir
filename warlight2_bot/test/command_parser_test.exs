@@ -44,4 +44,8 @@ defmodule CommandParserTest do
     test "updates time_per_move" do
        assert_command_parser_communication("settings time_per_move 500", :time_per_move, 500)
     end
+
+    test "updates max_round" do
+       assert_command_parser_communication("settings max_rounds 100", :max_rounds, 100)
+    end
 end

@@ -9,17 +9,22 @@ defmodule CommandParser do
       send parser, {:message, m}
   end
 
+  def send_single_int(engine, regex, msg, atom) do
+    matches = Regex.run(regex, msg)
+    send engine, {atom, String.to_integer List.last(matches)}
+  end
+
   def parse(game_engine, logger) do
      receive do
         {:message, msg} ->
             CustomLogger.write(logger, "Command received: " <> msg)
             cond do
             Regex.match?(~r/settings timebank (\d+)/, msg) ->
-                 matches = Regex.run(~r/settings timebank (\d+)/, msg)
-                 send game_engine, {:initial_timebank, String.to_integer List.last(matches)}
+                 send_single_int game_engine, ~r/settings timebank (\d+)/, msg, :initial_timebank
             Regex.match?(~r/settings time_per_move (\d+)/, msg) ->
-                 matches = Regex.run(~r/settings time_per_move (\d+)/, msg)
-                 send game_engine, {:time_per_move, String.to_integer List.last(matches)}
+                 send_single_int game_engine, ~r/settings time_per_move (\d+)/, msg, :time_per_move
+            Regex.match?(~r/settings max_rounds (\d+)/, msg) ->
+                send_single_int game_engine, ~r/settings max_rounds (\d+)/, msg, :max_rounds
             Regex.match?(~r/settings/, msg) -> nil
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
