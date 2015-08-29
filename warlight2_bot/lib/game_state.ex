@@ -1,7 +1,10 @@
 defmodule GameState do
 
-def set_timebank(state, initial_time) do
-  Map.put_new state, :timebank,  initial_time
+def initial() do
+    %{:timebank => 0}
+end
+def set_timebank(state, time) do
+  %{state | :timebank => time}
 end
 
 
