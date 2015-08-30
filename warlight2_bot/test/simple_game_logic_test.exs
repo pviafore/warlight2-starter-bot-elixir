@@ -70,6 +70,13 @@ defmodule SimpleGameLogicTest do
   LogicTestMacro.test_setting "should set starting pick amount", :starting_pick_amount, :set_starting_pick_amount, 1
   LogicTestMacro.test_setting "should set super regions", :super_regions, :set_super_regions, [["1", 2], ["3", 4]]
 
+  test "should set regions " do
+     logic = SimpleGameLogic.start self()
+     send logic, {:super_regions, [["1", 2], ["3", 4]]}
+     send logic, {:regions, [{"1", ["3", "4"]}, {"3", ["1","2"]}]}
+     expected_state = GameState.initial |> GameState.set_super_regions([["1", 2], ["3", 4]]) |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
+     assert_send_logic logic, {:state, self()},  expected_state, :state
+  end
 
 
 end

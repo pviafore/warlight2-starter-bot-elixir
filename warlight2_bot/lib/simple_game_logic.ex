@@ -26,6 +26,8 @@ defmodule SimpleGameLogic do
              recv(command_outputter, GameState.set_starting_pick_amount(game_state, amount))
          {:super_regions, super_regions} ->
              recv(command_outputter, GameState.set_super_regions(game_state, super_regions))
+         {:regions, regions} ->
+             recv(command_outputter, GameState.set_regions(game_state, regions))
          {:starting_region_choice, list} -> send command_outputter, {:message, List.first(list)}
          {:place_armies, _} -> send command_outputter, {:message, "No moves"}
          {:attack_transfer, _} -> send command_outputter, {:message, "No moves"}
