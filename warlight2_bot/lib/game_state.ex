@@ -19,7 +19,8 @@ defmodule GameState do
           :starting_regions => [],
           :starting_pick_amount => 0,
           :map => %{},
-          :neighbors => %{}}
+          :neighbors => %{},
+          :ownership => %{}}
     end
 
     GameStateMacro.create_updater "timebank"
@@ -42,7 +43,19 @@ defmodule GameState do
        put_in state, [:map, super_region, :regions], regions
     end
 
+    defp update_regions(state, regions) do
+      List.foldl(regions, state, &put_in_region/2 )
+    end
+
+    defp set_initial_ownership(state, regions) do
+       all_regions = regions |> Enum.map(&(elem(&1, 1))) |> List.flatten
+       %{state | :ownership => (for region <- all_regions, into: %{}, do: {region, {"neutral", 2} }) }
+    end
+
     def set_regions(state, regions) do
-        List.foldl(regions, state, &put_in_region/2 )
+        state |>
+        update_regions(regions) |>
+        set_initial_ownership(regions)
+
     end
 end

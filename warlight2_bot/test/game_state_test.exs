@@ -36,7 +36,8 @@ defmodule GameStateTest do
                 :starting_regions => [],
                 :starting_pick_amount => 0,
                 :map => %{},
-                :neighbors => %{}} == GameState.initial()
+                :neighbors => %{},
+                :ownership=>%{}} == GameState.initial()
    end
 
    GameStateTestMacro.test_state "should set timebank", :timebank, :set_timebank, 1000, 100
@@ -55,17 +56,18 @@ defmodule GameStateTest do
 
    GameStateTestMacro.test_state "should set superregions", :map, :set_super_regions, [["1",2], ["3", 4]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4), [["1",2],["3",4],["5",6]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4) |>make_super_region("5", 6)
 
-
-
-   test "should set regions" do
-      state = GameState.initial |> GameState.set_super_regions([["1", 2], ["3", 4]])
-      expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
-                                             |> make_super_region("3", 4, ["1","2"])}
-
-      assert expected_state == GameState.set_regions(state, [{"1", ["3", "4"]}, {"3", ["1","2"]}])
-   end
-
    GameStateTestMacro.test_state "should set neighbors", :neighbors, :set_neighbors, %{"1" => ["2", "3", "4"]}, %{"1" => ["2", "3", "4"], "2" =>["1"],  "3" => ["1"], "4"=>["1"]}
+
+
+   test "setting regions creates ownership and regions" do
+     state = GameState.initial
+          |> GameState.set_super_regions([["1", 2], ["3", 4]])
+
+     expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
+                                            |> make_super_region("3", 4, ["1","2"]),
+                               :ownership => %{"1" =>{"neutral", 2}, "2" =>{"neutral", 2}, "3" =>{"neutral", 2}, "4" =>{"neutral", 2}}}
+     assert expected_state == state |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
+   end
 
 
 
