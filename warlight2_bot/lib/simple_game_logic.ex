@@ -30,6 +30,8 @@ defmodule SimpleGameLogic do
              recv(command_outputter, GameState.set_regions(game_state, regions))
          {:neighbors, neighbors} ->
              recv(command_outputter, GameState.set_neighbors(game_state, neighbors))
+         {:wastelands, wastelands} ->
+             recv(command_outputter, GameState.set_wastelands(game_state, wastelands))
          {:starting_region_choice, list} -> send command_outputter, {:message, List.first(list)}
          {:place_armies, _} -> send command_outputter, {:message, "No moves"}
          {:attack_transfer, _} -> send command_outputter, {:message, "No moves"}

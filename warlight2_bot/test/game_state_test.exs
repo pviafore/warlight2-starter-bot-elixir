@@ -69,6 +69,17 @@ defmodule GameStateTest do
      assert expected_state == state |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
    end
 
+   test "can set wastelsands" do
+     state = GameState.initial
+          |> GameState.set_super_regions([["1", 2], ["3", 4]])
+          |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
+
+     expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
+                                            |> make_super_region("3", 4, ["1","2"]),
+                               :ownership => %{"1" =>{"neutral", 2}, "2" =>{"neutral", 6}, "3" =>{"neutral", 6}, "4" =>{"neutral", 2}}}
+     assert expected_state == state |> GameState.set_wastelands ["2", "3"]
+   end
+
 
 
 end

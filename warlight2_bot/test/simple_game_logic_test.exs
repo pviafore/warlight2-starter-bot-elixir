@@ -81,5 +81,17 @@ defmodule SimpleGameLogicTest do
   LogicTestMacro.test_setting "should set neighbors", :neighbors, :set_neighbors, %{"1" => ["2", "3"], "2" => ["1"], "3"=>["1"]}
 
 
+  test "should set wastelands after setting regions" do
+        logic = SimpleGameLogic.start self()
+        send logic, {:super_regions, [["1", 2], ["3", 4]]}
+        send logic, {:regions, [{"1", ["3", "4"]}, {"3", ["1","2"]}]}
+        send logic, {:wastelands, ["2", "3"]}
+        state2 = GameState.initial
+              |> GameState.set_super_regions([["1", 2], ["3", 4]])
+              |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
+        expected_state = GameState.set_wastelands state2, ["2", "3"]
+        assert_send_logic logic, {:state, self()},  expected_state, :state
+  end
+
 
 end
