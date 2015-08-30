@@ -35,6 +35,8 @@ defmodule SimpleGameLogic do
          {:opponent_starting_regions, regions} ->
              recv(command_outputter, GameState.set_opponent_starting_regions(game_state, regions))
          {:starting_region_choice, list} -> send command_outputter, {:message, List.first(list)}
+         {:update_map, regions} ->
+             recv(command_outputter, GameState.update_map(game_state, regions))
          {:place_armies, _} -> send command_outputter, {:message, "No moves"}
          {:attack_transfer, _} -> send command_outputter, {:message, "No moves"}
          _ -> send command_outputter, {:error, "Invalid Message Received"}

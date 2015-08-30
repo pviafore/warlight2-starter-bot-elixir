@@ -94,6 +94,7 @@ defmodule SimpleGameLogicTest do
   end
 
   LogicTestMacro.test_setting "should set opponent_starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1", "2"]
+  LogicTestMacro.test_setting "should set updated map", :update_map, :update_map, [{"1", "player1", 17}]
 
 
 

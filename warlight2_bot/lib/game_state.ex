@@ -65,13 +65,15 @@ defmodule GameState do
         put_in state, [:ownership, region], {name, armies}
     end
 
-    defp update_ownership_regions(state, regions) do
+    def update_map(state, regions) do
         List.foldl(regions, state, &update_ownership/2)
     end
 
     def set_wastelands(state, wastelands) do
         marked_wastelands = Enum.map(wastelands, &({&1, "neutral", 6}))
-        update_ownership_regions(state, marked_wastelands)
+        update_map(state, marked_wastelands)
 
     end
+
+
 end

@@ -60,7 +60,9 @@ defmodule CommandParser do
                   send_list game_engine, ~r/setup_map wastelands ((?:\d+\s*)+)/, msg, :wastelands
             Regex.match?(~r/setup_map opponent_starting_regions ((?:\d+\s*)+)/, msg) ->
                   send_list game_engine, ~r/setup_map opponent_starting_regions ((?:\d+\s*)+)/, msg, :opponent_starting_regions
-            Regex.match?(~r/update_map/, msg) -> nil
+            Regex.match?(~r/update_map ((?:\d+ \w+ \d+\s*)+)/, msg) ->
+                  matches = Regex.run(~r/update_map ((?:\d+ \w+ \d+\s*)+)/, msg)
+                  send game_engine, {:update_map, matches |> List.last |> String.split |> Enum.chunk(3) |> Enum.map(fn [a, b, c] -> {a, b, String.to_integer c} end)}
             Regex.match?(~r/opponent_moves/, msg) -> nil
             Regex.match?(~r/go place_armies \d+/, msg) ->
                 send game_engine, {:place_armies, ""}
