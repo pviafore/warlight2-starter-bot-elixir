@@ -68,6 +68,8 @@ defmodule SimpleGameLogicTest do
   LogicTestMacro.test_setting "should set starting_armies", :starting_armies, :set_starting_armies, 5
   LogicTestMacro.test_setting "should set starting regions", :starting_regions, :set_starting_regions, [3, 5, 7,  11, 12]
   LogicTestMacro.test_setting "should set starting pick amount", :starting_pick_amount, :set_starting_pick_amount, 1
+  LogicTestMacro.test_setting "should set super regions", :super_regions, :set_super_regions, [["1", 2], ["3", 4]]
+
 
 
 end

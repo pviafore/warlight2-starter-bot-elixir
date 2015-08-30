@@ -44,6 +44,7 @@ defmodule CommandParserTest do
     CommandParserMacro.test_communication "updates starting armies", "settings starting_armies 3", :starting_armies, 3
     CommandParserMacro.test_communication "updates starting regions", "settings starting_regions 1 2 4 7", :starting_regions, ["1", "2", "4" ,"7"]
     CommandParserMacro.test_communication "updates starting pick amount", "settings starting_pick_amount 1", :starting_pick_amount, 1
+    CommandParserMacro.test_communication "indicate super regions", "setup_map super_regions 1 2 3 4", :super_regions, [["1", 2], ["3", 4]]
 
 
 end
