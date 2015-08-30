@@ -48,4 +48,5 @@ defmodule CommandParserTest do
     CommandParserMacro.test_communication "indicate regions", "setup_map regions 1 3 2 3 3 1 4 1", :regions, [{"1", ["3","4"]}, {"3", ["1", "2"]}]
     CommandParserMacro.test_communication "indicate neighbors", "setup_map neighbors 1 2,3 2 1 3 1", :neighbors, %{"1"=> ["2","3"], "2"=> ["1"], "3"=>["1"]}
     CommandParserMacro.test_communication "indicate wastelands", "setup_map wastelands 3 4", :wastelands, ["3", "4"]
+    CommandParserMacro.test_communication "indicate opponent_starting_moves", "setup_map opponent_starting_regions 5 2", :opponent_starting_regions, ["5", "2"]
 end

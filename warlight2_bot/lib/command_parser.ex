@@ -58,6 +58,8 @@ defmodule CommandParser do
                   send game_engine, {:neighbors, (for {key,val} <- neighbors, into: %{}, do: {key,val})}
             Regex.match?(~r/setup_map wastelands ((?:\d+\s*)+)/, msg) ->
                   send_list game_engine, ~r/setup_map wastelands ((?:\d+\s*)+)/, msg, :wastelands
+            Regex.match?(~r/setup_map opponent_starting_regions ((?:\d+\s*)+)/, msg) ->
+                  send_list game_engine, ~r/setup_map opponent_starting_regions ((?:\d+\s*)+)/, msg, :opponent_starting_regions
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
             Regex.match?(~r/opponent_moves/, msg) -> nil

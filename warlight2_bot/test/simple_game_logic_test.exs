@@ -93,5 +93,8 @@ defmodule SimpleGameLogicTest do
         assert_send_logic logic, {:state, self()},  expected_state, :state
   end
 
+  LogicTestMacro.test_setting "should set opponent_starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1", "2"]
+
+
 
 end

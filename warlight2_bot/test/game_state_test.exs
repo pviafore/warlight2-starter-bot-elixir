@@ -37,7 +37,8 @@ defmodule GameStateTest do
                 :starting_pick_amount => 0,
                 :map => %{},
                 :neighbors => %{},
-                :ownership=>%{}} == GameState.initial()
+                :ownership=>%{},
+                :opponent_starting_regions=>[]} == GameState.initial()
    end
 
    GameStateTestMacro.test_state "should set timebank", :timebank, :set_timebank, 1000, 100
@@ -69,7 +70,7 @@ defmodule GameStateTest do
      assert expected_state == state |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
    end
 
-   test "can set wastelsands" do
+   test "can set wastelands" do
      state = GameState.initial
           |> GameState.set_super_regions([["1", 2], ["3", 4]])
           |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
@@ -79,7 +80,7 @@ defmodule GameStateTest do
                                :ownership => %{"1" =>{"neutral", 2}, "2" =>{"neutral", 6}, "3" =>{"neutral", 6}, "4" =>{"neutral", 2}}}
      assert expected_state == state |> GameState.set_wastelands ["2", "3"]
    end
-
+   GameStateTestMacro.test_state "should set opponent starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1","2","3"], ["1", "2","3","4"]
 
 
 end
