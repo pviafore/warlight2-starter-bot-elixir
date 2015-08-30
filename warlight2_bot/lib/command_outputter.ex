@@ -6,6 +6,7 @@ defmodule CommandOutputter do
 
    def send_input(logger) do
       receive do
+
          {:message, message} ->
                IO.puts message
                CustomLogger.write(logger, "Sent command to server " <> message)

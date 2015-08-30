@@ -1,5 +1,6 @@
 defmodule Bot do
    def main(_) do
+
       logger = CustomLogger.start()
       outputter = CommandOutputter.start(logger)
       strategy = DumbStrategy.start(outputter)
