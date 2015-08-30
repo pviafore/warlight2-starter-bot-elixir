@@ -27,25 +27,20 @@ defmodule SimpleGameLogicTest do
       assert_send_logic(logic, message, expected,atom)
    end
 
+   test "should send out state on starting_choice" do
+      assert_send_logic({:starting_region_choice, ["1", "2", "3"]}, {["1", "2", "3"], GameState.initial}, :pick_starting)
+   end
 
    test "should error out on invalid message" do
        assert_send_logic({:invalid, ""}, "Invalid Message Received", :error)
    end
 
-   test "should pick first starting region" do
-      assert_send_logic({:starting_region_choice, ["5", "7", "3", "1", "200", "12", "4"]}, "5", :message)
+   test "placing armies should send state" do
+       assert_send_logic({:place_armies, ""},  GameState.initial, :place_armies)
    end
 
-   test "should pick a different first starting region" do
-       assert_send_logic({:starting_region_choice, ["7", "3", "1", "200", "12", "4"]}, "7", :message)
-   end
-
-   test "placing armies should do nothing at all" do
-       assert_send_logic({:place_armies, ""},  "No moves", :message)
-   end
-
-   test "attacking should do nothing at all" do
-       assert_send_logic({:attack_transfer, ""},  "No moves", :message)
+   test "attacking should send state" do
+       assert_send_logic({:attack_transfer, ""},  GameState.initial, :attack_transfer)
    end
 
    test "can get initial state" do
