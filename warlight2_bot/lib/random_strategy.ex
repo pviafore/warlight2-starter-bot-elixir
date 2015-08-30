@@ -5,19 +5,24 @@ defmodule RandomStrategy do
         logic
     end
 
+    defp pick_random list do
+      Enum.at(list, :random.uniform(length(list)) - 1)
+    end
+
     defp get_own_areas(state) do
        Enum.map (Enum.filter state.ownership, (fn {area, {player_name, armies}} -> player_name == state.bot_name end)), &(elem(&1, 0))
     end
 
     defp place_armies_randomly_at_one_location(state) do
-        {:message, state.bot_name <> " " <> List.first(get_own_areas state) <> " " <> state.starting_armies}
+        own_areas = pick_random(get_own_areas state)
+        state.bot_name <> " place_armies " <> List.first(get_own_areas state) <> " " <> Integer.to_string state.starting_armies
     end
 
     def recv outputter do
         :random.seed(:erlang.now)
         receive do
            {:pick_starting, {areas, state}} ->
-                send outputter, {:message, Enum.at(areas, :random.uniform(length(areas)) - 1)}
+                send outputter, {:message, pick_random areas}
            {:place_armies, state} ->
                 msg = place_armies_randomly_at_one_location(state)
                 send outputter, {:message, msg}
