@@ -38,7 +38,8 @@ defmodule GameStateTest do
                 :map => %{},
                 :neighbors => %{},
                 :ownership=>%{},
-                :opponent_starting_regions=>[]} == GameState.initial()
+                :opponent_starting_regions=>[],
+                :last_opponent_moves=>[]} == GameState.initial()
    end
 
    GameStateTestMacro.test_state "should set timebank", :timebank, :set_timebank, 1000, 100
@@ -96,6 +97,7 @@ defmodule GameStateTest do
    end
 
    GameStateTestMacro.test_state "should set opponent starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1","2","3"], ["1", "2","3","4"]
+   GameStateTestMacro.test_state "should set last_opponent_moves", :last_opponent_moves, :set_last_opponent_moves, [{"1", "2", 3}], [{"player2", "attack/transfer", "1", "2", 3}, {"player2", "place_armies", "3", "2", 2}]
 
 
 end

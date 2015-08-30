@@ -63,7 +63,10 @@ defmodule CommandParser do
             Regex.match?(~r/update_map ((?:\d+ \w+ \d+\s*)+)/, msg) ->
                   matches = Regex.run(~r/update_map ((?:\d+ \w+ \d+\s*)+)/, msg)
                   send game_engine, {:update_map, matches |> List.last |> String.split |> Enum.chunk(3) |> Enum.map(fn [a, b, c] -> {a, b, String.to_integer c} end)}
-            Regex.match?(~r/opponent_moves/, msg) -> nil
+            Regex.match?(~r/opponent_moves ((?:\w+ (?:place_armies|attack\/transfer) \d+ \d+ \d+\s*)+)/, msg) ->
+                  matches = Regex.run(~r/opponent_moves ((?:\w+ (?:place_armies|attack\/transfer) \d+ \d+ \d+\s*)+)/, msg)
+                  moves = matches |> List.last |>String.split |> Enum.chunk(5) |> Enum.map(fn [a,b,c,d,e] -> {a,b, c, d, String.to_integer e} end)
+                  send game_engine, {:last_opponent_moves, moves}
             Regex.match?(~r/go place_armies \d+/, msg) ->
                 send game_engine, {:place_armies, ""}
             Regex.match?(~r/go attack\/transfer \d+/, msg) ->

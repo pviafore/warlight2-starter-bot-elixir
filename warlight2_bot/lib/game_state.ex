@@ -21,7 +21,8 @@ defmodule GameState do
           :map => %{},
           :neighbors => %{},
           :ownership => %{},
-          :opponent_starting_regions => []}
+          :opponent_starting_regions => [],
+          :last_opponent_moves => []}
     end
 
     GameStateMacro.create_updater "timebank"
@@ -35,6 +36,7 @@ defmodule GameState do
 
     GameStateMacro.create_updater "neighbors"
     GameStateMacro.create_updater "opponent_starting_regions"
+    GameStateMacro.create_updater "last_opponent_moves"
 
     def set_super_regions(state, super_regions) do
       regions = for [super_region, bonus] <- super_regions, into: %{}, do: {super_region, %{:bonus_armies => bonus, :regions => []}}
@@ -72,7 +74,6 @@ defmodule GameState do
     def set_wastelands(state, wastelands) do
         marked_wastelands = Enum.map(wastelands, &({&1, "neutral", 6}))
         update_map(state, marked_wastelands)
-
     end
 
 

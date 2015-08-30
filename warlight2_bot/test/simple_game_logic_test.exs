@@ -95,7 +95,7 @@ defmodule SimpleGameLogicTest do
 
   LogicTestMacro.test_setting "should set opponent_starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1", "2"]
   LogicTestMacro.test_setting "should set updated map", :update_map, :update_map, [{"1", "player1", 17}]
-
+  LogicTestMacro.test_setting "should set last opponent moves", :last_opponent_moves, :set_last_opponent_moves, [{"player1", "place_armies", "1", "1", 2}, {"player1", "attack/transfer", "3", "2", 5}]
 
 
 end

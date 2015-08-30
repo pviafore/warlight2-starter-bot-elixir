@@ -50,4 +50,6 @@ defmodule CommandParserTest do
     CommandParserMacro.test_communication "indicate wastelands", "setup_map wastelands 3 4", :wastelands, ["3", "4"]
     CommandParserMacro.test_communication "indicate opponent_starting_moves", "setup_map opponent_starting_regions 5 2", :opponent_starting_regions, ["5", "2"]
     CommandParserMacro.test_communication "update map", "update_map 1 player1 1 2 player2 4", :update_map, [{"1", "player1", 1}, {"2", "player2", 4}]
+    CommandParserMacro.test_communication "get last opponent moves", "opponent_moves player1 place_armies 1 1 2 player1 attack/transfer 3 1 4", :last_opponent_moves, [{"player1", "place_armies", "1", "1", 2}, {"player1", "attack/transfer", "3", "1", 4}]
+
 end
