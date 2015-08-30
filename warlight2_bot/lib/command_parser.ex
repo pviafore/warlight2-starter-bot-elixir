@@ -73,6 +73,8 @@ defmodule CommandParser do
                 send game_engine, {:attack_transfer, ""}
             Regex.match?(~r/pick_starting_region \d+ ((?:\d+ )+)/, msg) ->
                 send_list game_engine, ~r/pick_starting_region \d+ ((?:\d+\s*)+)/, msg, :starting_region_choice
+            Regex.match?(~r/opponent_moves/, msg) -> nil
+            Regex.match?(~r/update_map/, msg) -> nil
             true->
               CustomLogger.write(logger, "Command Parser didn't know how to parse message: " <> msg)
               send game_engine, {:error, "Invalid Message Received"}
