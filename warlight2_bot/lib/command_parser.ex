@@ -49,6 +49,9 @@ defmodule CommandParser do
                  matches = Regex.run(~r/setup_map super_regions ((?:\d \d+\s*)+)/, msg)
                  convert_second_to_integer = fn([a,b]) -> [a, String.to_integer b] end
                  send game_engine, {:super_regions, matches |> List.last |> String.split |> Enum.chunk(2) |> Enum.map(convert_second_to_integer)}
+            Regex.match?(~r/setup_map regions ((?:\d \d+\s*)+)/, msg) ->
+                 matches = Regex.run(~r/setup_map regions ((?:\d \d+\s*)+)/, msg)
+                 send game_engine, {:regions, matches |> List.last |> String.split |> Enum.chunk(2) |> Enum.map(&Enum.reverse/1) |> Enum.group_by(&List.first/1) |> Enum.map(fn { a, b} -> { a, Enum.sort(Enum.map(b, &List.last/1))} end) }
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
             Regex.match?(~r/opponent_moves/, msg) -> nil
