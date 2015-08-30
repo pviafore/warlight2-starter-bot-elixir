@@ -35,7 +35,8 @@ defmodule GameStateTest do
                 :starting_armies => 0,
                 :starting_regions => [],
                 :starting_pick_amount => 0,
-                :map => {} } == GameState.initial()
+                :map => %{},
+                :neighbors => %{}} == GameState.initial()
    end
 
    GameStateTestMacro.test_state "should set timebank", :timebank, :set_timebank, 1000, 100
@@ -61,9 +62,11 @@ defmodule GameStateTest do
       expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
                                              |> make_super_region("3", 4, ["1","2"])}
 
-
       assert expected_state == GameState.set_regions(state, [{"1", ["3", "4"]}, {"3", ["1","2"]}])
    end
+
+   GameStateTestMacro.test_state "should set neighbors", :neighbors, :set_neighbors, %{"1" => ["2", "3", "4"]}, %{"1" => ["2", "3", "4"], "2" =>["1"],  "3" => ["1"], "4"=>["1"]}
+
 
 
 end

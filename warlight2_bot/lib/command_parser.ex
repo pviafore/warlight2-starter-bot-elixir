@@ -45,13 +45,17 @@ defmodule CommandParser do
                  send_list game_engine, ~r/settings starting_regions ((?:\d+\s*)+)/, msg, :starting_regions
             Regex.match?(~r/settings starting_pick_amount (\d+)/, msg) ->
                  send_int game_engine, ~r/settings starting_pick_amount (\d+)/, msg, :starting_pick_amount
-            Regex.match?(~r/setup_map super_regions ((?:\d \d+\s*)+)/, msg) ->
-                 matches = Regex.run(~r/setup_map super_regions ((?:\d \d+\s*)+)/, msg)
+            Regex.match?(~r/setup_map super_regions ((?:\d+ \d+\s*)+)/, msg) ->
+                 matches = Regex.run(~r/setup_map super_regions ((?:\d+ \d+\s*)+)/, msg)
                  convert_second_to_integer = fn([a,b]) -> [a, String.to_integer b] end
                  send game_engine, {:super_regions, matches |> List.last |> String.split |> Enum.chunk(2) |> Enum.map(convert_second_to_integer)}
-            Regex.match?(~r/setup_map regions ((?:\d \d+\s*)+)/, msg) ->
-                 matches = Regex.run(~r/setup_map regions ((?:\d \d+\s*)+)/, msg)
+            Regex.match?(~r/setup_map regions ((?:\d+ \d+\s*)+)/, msg) ->
+                 matches = Regex.run(~r/setup_map regions ((?:\d+ \d+\s*)+)/, msg)
                  send game_engine, {:regions, matches |> List.last |> String.split |> Enum.chunk(2) |> Enum.map(&Enum.reverse/1) |> Enum.group_by(&List.first/1) |> Enum.map(fn { a, b} -> { a, Enum.sort(Enum.map(b, &List.last/1))} end) }
+            Regex.match?(~r/setup_map neighbors ((?:\d+ (?:\d+,?)+\s*)+)/ ,msg) ->
+                  matches = Regex.run(~r/setup_map neighbors ((?:\d+ (?:\d+,?)+\s*)+)/ ,msg)
+                  neighbors = List.last(matches) |> String.split |> Enum.chunk(2) |> Enum.map(fn [a,b] -> {a, String.split( b, ",")} end)
+                  send game_engine, {:neighbors, (for {key,val} <- neighbors, into: %{}, do: {key,val})}
             Regex.match?(~r/setup_map/, msg) -> nil
             Regex.match?(~r/update_map/, msg) -> nil
             Regex.match?(~r/opponent_moves/, msg) -> nil

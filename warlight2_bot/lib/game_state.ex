@@ -18,7 +18,8 @@ defmodule GameState do
           :starting_armies => 0,
           :starting_regions => [],
           :starting_pick_amount => 0,
-          :map => {}}
+          :map => %{},
+          :neighbors => %{}}
     end
 
     GameStateMacro.create_updater "timebank"
@@ -29,6 +30,8 @@ defmodule GameState do
     GameStateMacro.create_updater "starting_armies"
     GameStateMacro.create_updater "starting_regions"
     GameStateMacro.create_updater "starting_pick_amount"
+
+    GameStateMacro.create_updater "neighbors"
 
     def set_super_regions(state, super_regions) do
       regions = for [super_region, bonus] <- super_regions, into: %{}, do: {super_region, %{:bonus_armies => bonus, :regions => []}}

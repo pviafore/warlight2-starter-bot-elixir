@@ -78,5 +78,8 @@ defmodule SimpleGameLogicTest do
      assert_send_logic logic, {:state, self()},  expected_state, :state
   end
 
+  LogicTestMacro.test_setting "should set neighbors", :neighbors, :set_neighbors, %{"1" => ["2", "3"], "2" => ["1"], "3"=>["1"]}
+
+
 
 end
