@@ -46,7 +46,24 @@ defmodule GameStateTest do
    GameStateTestMacro.test_state "should set starting armies", :starting_armies, :set_starting_armies,3, 5
    GameStateTestMacro.test_state "should set starting regions", :starting_regions, :set_starting_regions, [4], [4,12]
    GameStateTestMacro.test_state "should set starting pick amount", :starting_pick_amount, :set_starting_pick_amount, 1, 5
-   GameStateTestMacro.test_state "should set superregions", :map, :set_super_regions, [["1",2], ["3", 4]], %{"1" => %{:bonus_armies => 2}, "3" => %{:bonus_armies =>4}}, [["1",2],["3",4],["5",6]], %{"1" => %{:bonus_armies => 2}, "3" => %{:bonus_armies =>4}, "5" => %{:bonus_armies=> 6}}
+
+
+   def make_super_region state, super_region, bonus_armies, regions \\ [] do
+      Map.put_new state, super_region, %{:bonus_armies => bonus_armies, :regions => regions}
+   end
+
+   GameStateTestMacro.test_state "should set superregions", :map, :set_super_regions, [["1",2], ["3", 4]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4), [["1",2],["3",4],["5",6]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4) |>make_super_region("5", 6)
+
+
+
+   test "should set regions" do
+      state = GameState.initial |> GameState.set_super_regions([["1", 2], ["3", 4]])
+      expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
+                                             |> make_super_region("3", 4, ["1","2"])}
+
+
+      assert expected_state == GameState.set_regions(state, [{"1", ["3", "4"]}, {"3", ["1","2"]}])
+   end
 
 
 end

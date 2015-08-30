@@ -31,7 +31,15 @@ defmodule GameState do
     GameStateMacro.create_updater "starting_pick_amount"
 
     def set_super_regions(state, super_regions) do
-      regions = for [super_region, bonus] <- super_regions, into: %{}, do: {super_region, %{:bonus_armies => bonus}}
+      regions = for [super_region, bonus] <- super_regions, into: %{}, do: {super_region, %{:bonus_armies => bonus, :regions => []}}
       %{state | :map => regions}
+    end
+
+    defp put_in_region({super_region, regions}, state) do
+       put_in state, [:map, super_region, :regions], regions
+    end
+
+    def set_regions(state, regions) do
+        List.foldl(regions, state, &put_in_region/2 )
     end
 end
