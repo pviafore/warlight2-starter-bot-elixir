@@ -58,8 +58,6 @@ defmodule GameStateTest do
 
    GameStateTestMacro.test_state "should set superregions", :map, :set_super_regions, [["1",2], ["3", 4]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4), [["1",2],["3",4],["5",6]], %{} |> make_super_region("1", 2) |> make_super_region("3", 4) |>make_super_region("5", 6)
 
-   GameStateTestMacro.test_state "should set neighbors", :neighbors, :set_neighbors, %{"1" => ["2", "3", "4"]}, %{"1" => ["2", "3", "4"], "2" =>["1"],  "3" => ["1"], "4"=>["1"]}
-
 
    test "setting regions creates ownership and regions" do
      state = GameState.initial
@@ -99,5 +97,23 @@ defmodule GameStateTest do
    GameStateTestMacro.test_state "should set opponent starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1","2","3"], ["1", "2","3","4"]
    GameStateTestMacro.test_state "should set last_opponent_moves", :last_opponent_moves, :set_last_opponent_moves, [{"1", "2", 3}], [{"player2", "attack/transfer", "1", "2", 3}, {"player2", "place_armies", "3", "2", 2}]
 
+
+   test "can get armies at position" do
+      state = GameState.initial
+           |> GameState.set_super_regions([["1", 2], ["3", 4]])
+           |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
+      new_state = GameState.update_map(state, [{"2", "player1", 4}])
+      assert 2 == GameState.get_armies(new_state, "1")
+      assert 4 == GameState.get_armies(new_state, "2")
+      assert 2 == GameState.get_armies(new_state, "3")
+      assert 2 == GameState.get_armies(new_state, "4")
+   end
+
+   test "updating neighbors updates both ways" do
+      state = GameState.initial
+           |> GameState.set_super_regions([["1", 2], ["3", 4]])
+           |> GameState.set_regions [{"1", ["3", "4"]}, {"3", ["1","2"]}]
+      assert %{state | :neighbors => %{"1" => ["2"], "2" => ["1"]}} == GameState.set_neighbors(state, %{"1"=>["2"]})
+   end
 
 end

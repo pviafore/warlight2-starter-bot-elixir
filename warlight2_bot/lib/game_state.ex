@@ -34,13 +34,30 @@ defmodule GameState do
     GameStateMacro.create_updater "starting_regions"
     GameStateMacro.create_updater "starting_pick_amount"
 
-    GameStateMacro.create_updater "neighbors"
+
     GameStateMacro.create_updater "opponent_starting_regions"
     GameStateMacro.create_updater "last_opponent_moves"
 
     def set_super_regions(state, super_regions) do
       regions = for [super_region, bonus] <- super_regions, into: %{}, do: {super_region, %{:bonus_armies => bonus, :regions => []}}
       %{state | :map => regions}
+    end
+
+    defp update_neighbors({region, neighbors}, state) do
+       List.foldl(neighbors, state,
+                            fn neighbor, state ->
+                                  put_in state, [:neighbors, neighbor],
+                                       (if state.neighbors[neighbor] == nil do
+                                           [region]
+                                        else
+                                           state.neighbors[neighbor] ++ [region]
+                                        end)
+                            end)
+    end
+
+    def set_neighbors(state, neighbors) do
+       new_state=  %{state | :neighbors => neighbors}
+       List.foldl(Map.to_list(neighbors), new_state, &update_neighbors/2)
     end
 
     defp put_in_region({super_region, regions}, state) do
@@ -61,6 +78,7 @@ defmodule GameState do
         update_regions(regions) |>
         set_initial_ownership(regions)
 
+
     end
 
     defp update_ownership({region, name, armies}, state) do
@@ -74,6 +92,10 @@ defmodule GameState do
     def set_wastelands(state, wastelands) do
         marked_wastelands = Enum.map(wastelands, &({&1, "neutral", 6}))
         update_map(state, marked_wastelands)
+    end
+
+    def get_armies(state, region) do
+        elem(state.ownership[region], 1)
     end
 
 

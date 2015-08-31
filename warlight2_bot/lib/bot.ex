@@ -3,7 +3,7 @@ defmodule Bot do
 
       logger = CustomLogger.start()
       outputter = CommandOutputter.start(logger)
-      strategy = RandomStrategy.start(outputter)
+      strategy = RandomStrategy.start(outputter, logger)
       logic = SimpleGameLogic.start(strategy)
       command_parser = CommandParser.start(logic, logger)
       run_input_loop( command_parser)
