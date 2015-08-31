@@ -27,22 +27,10 @@ defmodule RandomStrategy do
         own_areas = get_own_areas state
         big_areas = Enum.filter own_areas, &(GameState.get_armies(state, &1) > 1)
         starting_region = pick_random(big_areas)
-
-
         neighbors = state.neighbors[starting_region]
-        CustomLogger.write(logger, "After Getting ready - neighbors " <> starting_region <> " " <> Integer.to_string (List.last(Tuple.to_list(state.ownership[starting_region]))))
-        :timer.sleep(25)
         num_armies = Integer.to_string(GameState.get_armies(state, starting_region) - 1)
 
-
-        CustomLogger.write(logger, "Attack!" <> num_armies)
-        :timer.sleep(25)
-        CustomLogger.write(logger, "Attack! "<> Enum.join(Enum.sort(Map.keys(state.neighbors)), " "))
-        :timer.sleep(25)
-        msg = state.bot_name <> " attack/transfer " <> starting_region <> " " <> pick_random(neighbors) <> " " <> num_armies
-        CustomLogger.write(logger, msg)
-        :timer.sleep(25)
-        msg
+        state.bot_name <> " attack/transfer " <> starting_region <> " " <> pick_random(neighbors) <> " " <> num_armies
 
     end
 
