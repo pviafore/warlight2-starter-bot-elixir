@@ -7,11 +7,11 @@ defmodule DumbStrategy do
 
     def recv outputter do
         receive do
-           {:pick_starting, {areas, state}} ->
+           {:pick_starting, {areas, _}} ->
                 send outputter, {:message, List.first(areas)}
-           {:place_armies, state} ->
+           {:place_armies, _} ->
                 send outputter, {:message, "No Moves"}
-           {:attack_transfer, state} ->
+           {:attack_transfer, _} ->
                 send outputter, {:message, "No Moves"}
            _ ->
                 send outputter, {:error, "Invalid Message Received"}

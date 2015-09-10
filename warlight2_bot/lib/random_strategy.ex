@@ -1,7 +1,7 @@
 defmodule RandomStrategy do
 
-    def start(outputter, logger) do
-        {:ok, logic} = Task.start_link(fn->recv(outputter, logger) end)
+    def start(outputter) do
+        {:ok, logic} = Task.start_link(fn->recv(outputter) end)
         logic
     end
 
@@ -22,7 +22,7 @@ defmodule RandomStrategy do
         state.bot_name <> " place_armies " <> pick_random(own_areas) <> " " <> Integer.to_string state.starting_armies
     end
 
-    defp attack_randomly(state, logger) do
+    defp attack_randomly(state) do
 
         own_areas = get_own_areas state
         big_areas = Enum.filter own_areas, &(GameState.get_armies(state, &1) > 1)
@@ -34,7 +34,7 @@ defmodule RandomStrategy do
 
     end
 
-    def recv outputter, logger do
+    def recv outputter do
         :random.seed(:os.timestamp)
         receive do
 
@@ -44,12 +44,12 @@ defmodule RandomStrategy do
                 msg = place_armies_randomly_at_one_location(state)
                 send outputter, {:message, msg}
            {:attack_transfer, state} ->
-                msg = attack_randomly(state, logger)
+                msg = attack_randomly(state)
                 send outputter, {:message, msg}
            _ ->
                 send outputter, {:error, "Invalid Message Received"}
         end
-        recv(outputter, logger)
+        recv(outputter)
     end
 
 end

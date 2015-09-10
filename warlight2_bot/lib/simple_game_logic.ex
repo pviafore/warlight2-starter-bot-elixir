@@ -1,50 +1,55 @@
-defmodule SimpleGameLogic do
+defmodule GameLogicMacro do
 
-  def start(player_strategy) do
-      {:ok, logic} = Task.start_link(fn->recv(player_strategy, GameState.initial) end)
+   defmacro create_handle_func(param_name) do
+     quote do
+        defp handle(strategy, state, {unquote(:"#{param_name}"), x}) do
+           recv strategy, apply( GameState, unquote(:"set_#{param_name}"), [state, x])
+        end
+     end
+   end
+
+   defmacro create_passalong_func(atom) do
+      quote do
+        defp handle(strategy, state, {unquote(atom), _}), do: send(strategy, {unquote(atom), state})
+      end
+   end
+
+end
+
+
+defmodule SimpleGameLogic do
+  require GameLogicMacro
+  def start(strategy) do
+      {:ok, logic} = Task.start_link(fn->recv(strategy, GameState.initial) end)
       logic
   end
 
-  def recv(player_strategy, game_state) do
+  defp handle(_, state, {:state, sender}), do: send(sender, {:state, state})
+  defp handle(strategy, state, {:initial_timebank, time}), do: recv(strategy, GameState.set_timebank(state, time))
+  GameLogicMacro.create_handle_func "time_per_move"
+  GameLogicMacro.create_handle_func "max_rounds"
+  GameLogicMacro.create_handle_func "bot_name"
+  GameLogicMacro.create_handle_func "opponent_bot_name"
+  GameLogicMacro.create_handle_func "starting_armies"
+  GameLogicMacro.create_handle_func "starting_regions"
+  GameLogicMacro.create_handle_func "starting_pick_amount"
+  GameLogicMacro.create_handle_func "super_regions"
+  GameLogicMacro.create_handle_func "regions"
+  GameLogicMacro.create_handle_func "neighbors"
+  GameLogicMacro.create_handle_func "wastelands"
+  GameLogicMacro.create_handle_func "opponent_starting_regions"
+  GameLogicMacro.create_handle_func "last_opponent_moves"
+  GameLogicMacro.create_passalong_func :place_armies
+  GameLogicMacro.create_passalong_func :attack_transfer
+  defp handle(strategy, state, {:starting_region_choice, list}), do: send(strategy, {:pick_starting, {list,state}})
+  defp handle(strategy, state, {:update_map, regions}), do: recv(strategy, GameState.update_map(state, regions))
+  defp handle(strategy, _, _), do: send( strategy, {:error, "Invalid Message Received"})
+
+  def recv(strategy, state) do
       receive do
-         {:state, sender} -> send sender, {:state, game_state}
-         {:initial_timebank, time} ->
-            recv(player_strategy, GameState.set_timebank(game_state, time))
-         {:time_per_move, time} ->
-            recv(player_strategy, GameState.set_time_per_move(game_state, time))
-         {:max_rounds, rounds} ->
-            recv(player_strategy, GameState.set_max_rounds(game_state, rounds))
-         {:bot_name, name} ->
-            recv(player_strategy, GameState.set_bot_name(game_state, name))
-         {:opponent_bot_name, name} ->
-             recv(player_strategy, GameState.set_opponent_bot_name(game_state, name))
-         {:starting_armies, num_armies} ->
-             recv(player_strategy, GameState.set_starting_armies(game_state, num_armies))
-         {:starting_regions, num_regions} ->
-             recv(player_strategy, GameState.set_starting_regions(game_state, num_regions))
-         {:starting_pick_amount, amount} ->
-             recv(player_strategy, GameState.set_starting_pick_amount(game_state, amount))
-         {:super_regions, super_regions} ->
-             recv(player_strategy, GameState.set_super_regions(game_state, super_regions))
-         {:regions, regions} ->
-             recv(player_strategy, GameState.set_regions(game_state, regions))
-         {:neighbors, neighbors} ->
-             recv(player_strategy, GameState.set_neighbors(game_state, neighbors))
-         {:wastelands, wastelands} ->
-             recv(player_strategy, GameState.set_wastelands(game_state, wastelands))
-         {:opponent_starting_regions, regions} ->
-             recv(player_strategy, GameState.set_opponent_starting_regions(game_state, regions))
-         {:starting_region_choice, list} ->
-             send player_strategy, {:pick_starting, {list, game_state} }
-         {:update_map, regions} ->
-             recv(player_strategy, GameState.update_map(game_state, regions))
-         {:last_opponent_moves, moves} ->
-             recv(player_strategy, GameState.set_last_opponent_moves(game_state, moves))
-         {:place_armies, _} -> send player_strategy, {:place_armies, game_state}
-         {:attack_transfer, _} -> send player_strategy, {:attack_transfer,game_state}
-         _ -> send player_strategy, {:error, "Invalid Message Received"}
+         m -> handle strategy, state, m
       end
-      recv(player_strategy, game_state)
+      recv(strategy,  state)
   end
 
 
