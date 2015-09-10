@@ -76,7 +76,7 @@ defmodule GameStateTest do
 
      expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
                                             |> make_super_region("3", 4, ["1","2"]),
-                               :ownership => %{"1" =>{"neutral", 2}, "2" =>{"neutral", 6}, "3" =>{"neutral", 6}, "4" =>{"neutral", 2}}}
+                               :ownership => %{"1" =>{"fog", 2}, "2" =>{"neutral", 6}, "3" =>{"neutral", 6}, "4" =>{"fog", 2}}}
      assert expected_state == state |> GameState.set_wastelands ["2", "3"]
    end
 
@@ -87,11 +87,11 @@ defmodule GameStateTest do
 
     expected_state = %{state | :map => %{} |> make_super_region("1", 2, ["3","4"])
                                            |> make_super_region("3", 4, ["1","2"]),
-                              :ownership => %{"1" =>{"neutral", 2}, "2" =>{"player1", 4}, "3" =>{"neutral", 2}, "4" =>{"neutral", 2}}}
+                              :ownership => %{"1" =>{"fog", 2}, "2" =>{"player1", 4}, "3" =>{"fog", 2}, "4" =>{"fog", 2}}}
     assert expected_state == state |> GameState.update_map([{"2", "player1", 4}])
 
-    new_expected_state = %{state | :ownership => %{"1" =>{"player1", 5}, "2" =>{"player1", 4}, "3" =>{"player2", 5}, "4" =>{"neutral", 2}}}
-    assert new_expected_state == state |> GameState.update_map([{"2", "player1", 4}]) |> GameState.update_map([{"1", "player1", 5}, {"3", "player2", 5}])
+    new_expected_state = %{state | :ownership => %{"1" =>{"player1", 5}, "2" =>{"player1", 4}, "3" =>{"player2", 5}, "4" =>{"fog", 2}}}
+    assert new_expected_state == state |> GameState.update_map([{"2", "player1", 4}]) |> GameState.update_map([{"1", "player1", 5},{"2", "player1", 4}, {"3", "player2", 5}])
    end
 
    GameStateTestMacro.test_state "should set opponent starting_regions", :opponent_starting_regions, :set_opponent_starting_regions, ["1","2","3"], ["1", "2","3","4"]

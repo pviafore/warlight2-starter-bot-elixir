@@ -85,8 +85,19 @@ defmodule GameState do
         put_in state, [:ownership, region], {name, armies}
     end
 
+    defp update_fog_of_war({region, {_, armies}}, state) do
+        update_ownership({region, "fog", armies}, state)
+    end
+
+    defp get_other_regions(regions, state) do
+       region_list = Enum.map(regions, &(elem &1, 0))
+       all_regions = Enum.map(state[:ownership], &(elem &1, 0))
+       Enum.filter(state[:ownership], &(!Enum.find_value(region_list, fn(x) -> x == elem &1, 0 end)))
+    end
+
     def update_map(state, regions) do
-        List.foldl(regions, state, &update_ownership/2)
+        new_state = List.foldl(regions, state, &update_ownership/2)
+        List.foldl(get_other_regions(regions, new_state), new_state, &update_fog_of_war/2)
     end
 
     def set_wastelands(state, wastelands) do
