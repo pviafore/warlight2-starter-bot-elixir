@@ -100,7 +100,7 @@ defmodule GameState do
     end
 
     def set_wastelands(state, wastelands) do
-        marked_wastelands = Enum.map(wastelands, &({&1, "neutral", 6}))
+        marked_wastelands = Enum.map(wastelands, &{&1, "neutral", 6})
         update_map(state, marked_wastelands)
     end
 
