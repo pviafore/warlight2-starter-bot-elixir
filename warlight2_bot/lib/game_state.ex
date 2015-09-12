@@ -91,7 +91,7 @@ defmodule GameState do
 
     defp get_other_regions(regions, state) do
        region_list = Enum.map(regions, &(elem &1, 0))
-       Enum.filter(state[:ownership], &(!Enum.find_value(region_list, fn(x) -> x == elem &1, 0 end)))
+       Enum.filter(state.ownership, &(!Enum.find_value(region_list, fn(x) -> x == elem &1, 0 end)))
     end
 
     def update_map(state, regions) do
