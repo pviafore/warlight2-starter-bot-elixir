@@ -27,11 +27,11 @@ defmodule SimpleGameLogic do
       logic
   end
 
-  defp handle(_, state, {:state, sender}), do
+  defp handle(_, state, {:state, sender}) do
      send(sender, {:state, state})
      state
   end
-  
+
   defp handle(strategy, state, {:initial_timebank, time}) do
     recv(strategy, GameState.set_timebank(state, time))
     state
@@ -60,14 +60,14 @@ defmodule SimpleGameLogic do
 
   defp handle(strategy, state, {:update_map, regions}), do: GameState.update_map(state, regions)
 
-  defp handle(strategy, _, _) do
+  defp handle(strategy, state, _) do
     send( strategy, {:error, "Invalid Message Received"})
     state
   end
 
   def recv(strategy, state) do
       receive do
-         m -> recv(strategy, handle (strategy, state, m)
+         m -> recv(strategy, handle(strategy, state, m))
       end
       recv(strategy,  state)
   end
