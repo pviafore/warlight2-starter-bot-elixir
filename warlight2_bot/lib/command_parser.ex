@@ -1,89 +1,77 @@
 defmodule CommandParser do
 
   def start(game_engine, logger) do
-      {:ok, parser} = Task.start_link(fn->parse(game_engine, logger) end)
+      {:ok, parser} = Task.start_link(fn->parse_message(game_engine, logger) end)
       parser
   end
 
   def send_message(parser, m) do
-      send parser, {:message, m}
+    send parser, {:message, m}
   end
 
-  def send_int(engine, regex, msg, atom) do
-    matches = Regex.run(regex, msg)
-    send engine, {atom, String.to_integer List.last(matches)}
+  defp parse(_, _l, ["update_map"]), do: CustomLogger.log(_l, "Oh Noes - update map")
+  defp parse(_, _l, ["opponent_moves"]), do: CustomLogger.log(_l, "Oh Noes")
+  defp parse(game_engine, _, ["settings", "timebank", val]), do: send(game_engine, {:initial_timebank, String.to_integer(val)})
+  defp parse(game_engine, _, ["settings", "time_per_move", val]), do: send(game_engine, {:time_per_move, String.to_integer(val)})
+  defp parse(game_engine, _, ["settings", "max_rounds", val]), do: send(game_engine, {:max_rounds, String.to_integer(val)})
+  defp parse(game_engine, _, ["settings", "your_bot", val]), do: send(game_engine, {:bot_name, val})
+  defp parse(game_engine, _, ["settings", "opponent_bot", val]), do: send(game_engine, {:opponent_bot_name, val})
+  defp parse(game_engine, _, ["settings", "starting_armies", val]), do: send(game_engine, {:starting_armies, String.to_integer(val)})
+  defp parse(game_engine, _, ["settings", "starting_regions" | val]), do: send(game_engine, {:starting_regions, val})
+  defp parse(game_engine, _, ["settings", "starting_pick_amount", val]), do: send(game_engine, {:starting_pick_amount,  String.to_integer(val)})
+  defp parse(game_engine, _, ["setup_map", "super_regions" | msg]) do
+     convert_second_to_integer = fn([a,b]) -> [a, String.to_integer b] end
+     send game_engine, {:super_regions, msg |> Enum.chunk(2) |> Enum.map(convert_second_to_integer)}
   end
 
-  def send_string(engine, regex, msg, atom) do
-    matches = Regex.run(regex, msg)
-    send engine, {atom, List.last(matches)}
+  defp parse(game_engine, _, ["setup_map", "regions" | msg]) do
+      send game_engine, {:regions, msg |> Enum.chunk(2) |> Enum.map(&Enum.reverse/1) |> Enum.group_by(&List.first/1) |> Enum.map(fn { a, b} -> { a, Enum.sort(Enum.map(b, &List.last/1))} end) }
   end
 
-  def send_list(engine, regex, msg, atom) do
-     matches = Regex.run(regex, msg)
-     send engine, {atom, String.split(List.last(matches))}
+  defp parse(game_engine, _, ["setup_map", "neighbors" | msg]) do
+        neighbors = msg |> Enum.chunk(2) |> Enum.map(fn [a,b] -> {a, String.split( b, ",")} end)
+        send game_engine, {:neighbors, (for {key,val} <- neighbors, into: %{}, do: {key,val})}
   end
 
-  def handle(game_engine, _, ["pick_starting_region", _time | regions] ), do: send(game_engine, {:starting_region_choice, regions})
-  def handle(game_engine, _, ["go", "attack/transfer" | _]), do: send(game_engine, {:attack_transfer, ""})
-  def handle(game_engine, _, ["go", "place_armies" | _]), do: send(game_engine, {:place_armies, ""})
-  def handle(game_engine, _, ["opponent_moves"  | msg]) do
+  defp parse(game_engine, _, ["setup_map", "wastelands" | wastelands]), do: send(game_engine, {:wastelands, wastelands})
+  defp parse(game_engine, _, ["pick_starting_region", _time | regions] ), do: send(game_engine, {:starting_region_choice, regions})
+  defp parse(game_engine, _, ["setup_map",  "opponent_starting_regions" | regions] ), do: send(game_engine, {:opponent_starting_regions, regions})
+  defp parse(game_engine, _, ["go", "attack/transfer", _]), do: send(game_engine, {:attack_transfer, ""})
+  defp parse(game_engine, _, ["go", "place_armies", _]), do: send(game_engine, {:place_armies, ""})
+  defp parse(game_engine, _l, ["opponent_moves"  | msg]) do
+
+     #CustomLogger.log(_l, "Oh Noes - moving around")
      moves = msg |> Enum.chunk(5) |> Enum.map(fn [a,b,c,d,e] -> {a,b, c, d, String.to_integer e} end)
      send game_engine, {:last_opponent_moves, moves}
   end
-  def handle(game_engine, _, ["update_map" | msg]) do
+
+  defp parse(game_engine, _l, ["update_map" | msg]) do
+    #CustomLogger.log(_l, "Oh Noes - updating around")
     send game_engine, {:update_map, msg |> Enum.chunk(3) |> Enum.map(fn [a, b, c] -> {a, b, String.to_integer c} end)}
   end
 
-  def handle(game_engine, logger, msg) do
+  defp parse(game_engine, logger, msg) do
       CustomLogger.write(logger, "Command Parser didn't know how to parse message: " <> Enum.join msg, ",")
       send game_engine, {:error, "Invalid Message Received"}
   end
 
-  def parse(game_engine, logger) do
+  def parse_message(game_engine, logger) do
      receive do
         {:message, msg} ->
-            CustomLogger.write(logger, msg)
-            split_msg = String.split msg
-            cond do
-            Regex.match?(~r/settings timebank (\d+)/, msg) ->
-                 send_int game_engine, ~r/settings timebank (\d+)/, msg, :initial_timebank
-            Regex.match?(~r/settings time_per_move (\d+)/, msg) ->
-                 send_int game_engine, ~r/settings time_per_move (\d+)/, msg, :time_per_move
-            Regex.match?(~r/settings max_rounds (\d+)/, msg) ->
-                send_int game_engine, ~r/settings max_rounds (\d+)/, msg, :max_rounds
-            Regex.match?(~r/settings your_bot (\w+)/, msg) ->
-                send_string game_engine, ~r/settings your_bot (\w+)/, msg, :bot_name
-            Regex.match?(~r/settings opponent_bot (\w+)/, msg) ->
-                send_string game_engine, ~r/settings opponent_bot (\w+)/, msg, :opponent_bot_name
-            Regex.match?(~r/settings starting_armies (\d+)/, msg) ->
-                 send_int game_engine, ~r/settings starting_armies (\d+)/, msg, :starting_armies
-            Regex.match?(~r/settings starting_regions ((?:\d+\s*)+)/, msg) ->
-                 send_list game_engine, ~r/settings starting_regions ((?:\d+\s*)+)/, msg, :starting_regions
-            Regex.match?(~r/settings starting_pick_amount (\d+)/, msg) ->
-                 send_int game_engine, ~r/settings starting_pick_amount (\d+)/, msg, :starting_pick_amount
-            Regex.match?(~r/setup_map super_regions ((?:\d+ \d+\s*)+)/, msg) ->
-                 matches = Regex.run(~r/setup_map super_regions ((?:\d+ \d+\s*)+)/, msg)
-                 convert_second_to_integer = fn([a,b]) -> [a, String.to_integer b] end
-                 send game_engine, {:super_regions, matches |> List.last |> String.split |> Enum.chunk(2) |> Enum.map(convert_second_to_integer)}
-            Regex.match?(~r/setup_map regions ((?:\d+ \d+\s*)+)/, msg) ->
-                 matches = Regex.run(~r/setup_map regions ((?:\d+ \d+\s*)+)/, msg)
-                 send game_engine, {:regions, matches |> List.last |> String.split |> Enum.chunk(2) |> Enum.map(&Enum.reverse/1) |> Enum.group_by(&List.first/1) |> Enum.map(fn { a, b} -> { a, Enum.sort(Enum.map(b, &List.last/1))} end) }
-            Regex.match?(~r/setup_map neighbors ((?:\d+ (?:\d+,?)+\s*)+)/ ,msg) ->
-                  matches = Regex.run(~r/setup_map neighbors ((?:\d+ (?:\d+,?)+\s*)+)/ ,msg)
-                  neighbors = List.last(matches) |> String.split |> Enum.chunk(2) |> Enum.map(fn [a,b] -> {a, String.split( b, ",")} end)
-                  send game_engine, {:neighbors, (for {key,val} <- neighbors, into: %{}, do: {key,val})}
-            Regex.match?(~r/setup_map wastelands ((?:\d+\s*)+)/, msg) ->
-                  send_list game_engine, ~r/setup_map wastelands ((?:\d+\s*)+)/, msg, :wastelands
-            Regex.match?(~r/setup_map opponent_starting_regions ((?:\d+\s*)+)/, msg) ->
-                  send_list game_engine, ~r/setup_map opponent_starting_regions ((?:\d+\s*)+)/, msg, :opponent_starting_regions
+        CustomLogger.write(logger, msg <> " was received successfully")
+        cond do
+            Regex.match?(~r/opponent_moves ((?:\w+ (?:place_armies|attack\/transfer) \d+ \d+ \d+\s*)+)/, msg) ->
+                parse game_engine, logger, String.split(msg)
+            Regex.match?(~r/opponent_moves/, msg) -> nil #parse game_engine, logger, String.split(msg)
+
             true->
-              handle game_engine, logger, split_msg
-            end
+              parse game_engine, logger, String.split msg
+              CustomLogger.write(logger, msg <> " was parsed successfully")
+          end
         _ -> CustomLogger.write(logger, "Command Parser received invalid command ")
              send game_engine, {:error, "Invalid Message Received"}
      end
-     parse(game_engine, logger)
+     CustomLogger.write(logger, "Parsing Again")
+     parse_message(game_engine, logger)
   end
-
 end
