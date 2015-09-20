@@ -9,8 +9,13 @@ defmodule CommandParser do
     send parser, {:message, m}
   end
 
-  defp parse(_, _l, ["update_map"]), do: CustomLogger.log(_l, "Oh Noes - update map")
-  defp parse(_, _l, ["opponent_moves"]), do: CustomLogger.log(_l, "Oh Noes")
+  defp decompose_opponent_moves([]), do: []
+  defp decompose_opponent_moves([name, "attack/transfer", from, to, armies | rest]), do: [{name, "attack/transfer", from, to, String.to_integer armies}] ++ decompose_opponent_moves(rest)
+  defp decompose_opponent_moves([name, "place_armies", region, armies | rest]), do: [{name, "place_armies", region, String.to_integer armies}] ++ decompose_opponent_moves(rest)
+
+  defp parse(_, _, ["update_map"]), do: nil
+  defp parse(_, _, ["opponent_moves"]), do: nil
+
   defp parse(game_engine, _, ["settings", "timebank", val]), do: send(game_engine, {:initial_timebank, String.to_integer(val)})
   defp parse(game_engine, _, ["settings", "time_per_move", val]), do: send(game_engine, {:time_per_move, String.to_integer(val)})
   defp parse(game_engine, _, ["settings", "max_rounds", val]), do: send(game_engine, {:max_rounds, String.to_integer(val)})
@@ -38,15 +43,11 @@ defmodule CommandParser do
   defp parse(game_engine, _, ["setup_map",  "opponent_starting_regions" | regions] ), do: send(game_engine, {:opponent_starting_regions, regions})
   defp parse(game_engine, _, ["go", "attack/transfer", _]), do: send(game_engine, {:attack_transfer, ""})
   defp parse(game_engine, _, ["go", "place_armies", _]), do: send(game_engine, {:place_armies, ""})
-  defp parse(game_engine, _l, ["opponent_moves"  | msg]) do
-
-     #CustomLogger.log(_l, "Oh Noes - moving around")
-     moves = msg |> Enum.chunk(5) |> Enum.map(fn [a,b,c,d,e] -> {a,b, c, d, String.to_integer e} end)
-     send game_engine, {:last_opponent_moves, moves}
+  defp parse(game_engine, _, ["opponent_moves"  | msg]) do
+     send game_engine, {:last_opponent_moves, decompose_opponent_moves(msg)}
   end
 
-  defp parse(game_engine, _l, ["update_map" | msg]) do
-    #CustomLogger.log(_l, "Oh Noes - updating around")
+  defp parse(game_engine, _, ["update_map" | msg]) do
     send game_engine, {:update_map, msg |> Enum.chunk(3) |> Enum.map(fn [a, b, c] -> {a, b, String.to_integer c} end)}
   end
 
@@ -58,16 +59,9 @@ defmodule CommandParser do
   def parse_message(game_engine, logger) do
      receive do
         {:message, msg} ->
-        CustomLogger.write(logger, msg <> " was received successfully")
-        cond do
-            Regex.match?(~r/opponent_moves ((?:\w+ (?:place_armies|attack\/transfer) \d+ \d+ \d+\s*)+)/, msg) ->
-                parse game_engine, logger, String.split(msg)
-            Regex.match?(~r/opponent_moves/, msg) -> nil #parse game_engine, logger, String.split(msg)
-
-            true->
-              parse game_engine, logger, String.split msg
-              CustomLogger.write(logger, msg <> " was parsed successfully")
-          end
+          CustomLogger.write(logger, msg <> " was received successfully")
+          parse game_engine, logger, String.split msg
+          CustomLogger.write(logger, msg <> " was parsed successfully")
         _ -> CustomLogger.write(logger, "Command Parser received invalid command ")
              send game_engine, {:error, "Invalid Message Received"}
      end
