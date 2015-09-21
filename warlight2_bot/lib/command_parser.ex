@@ -61,7 +61,6 @@ defmodule CommandParser do
         {:message, msg} ->
           CustomLogger.write(logger, msg <> " was received successfully")
           parse game_engine, logger, String.split msg
-          CustomLogger.write(logger, msg <> " was parsed successfully")
         _ -> CustomLogger.write(logger, "Command Parser received invalid command ")
              send game_engine, {:error, "Invalid Message Received"}
      end
