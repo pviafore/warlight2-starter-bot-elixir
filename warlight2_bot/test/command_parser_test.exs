@@ -47,4 +47,8 @@ defmodule CommandParserTest do
     CommandParserMacro.test_communication "update map", "update_map 1 player1 1 2 player2 4", :update_map, [{"1", "player1", 1}, {"2", "player2", 4}]
     CommandParserMacro.test_communication "get last opponent moves", "opponent_moves player1 place_armies 1 1 player1 attack/transfer 3 1 4", :last_opponent_moves, [{"player1", "place_armies", "1", 1}, {"player1", "attack/transfer", "3", "1", 4}]
 
+    test "can send :eof without throwing exception" do
+       command_parser = CommandParser.start(self())
+       CommandParser.send_message(command_parser, :eof)
+    end
 end
